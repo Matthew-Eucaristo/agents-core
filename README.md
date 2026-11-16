@@ -45,12 +45,7 @@ Across the public histories of agent system prompts (Codex, Claude Code, Gemini 
 
 ## Layers
 
-| Layer | Holds |
-|---|---|
-| Commandments | Limits and duties, the same for everyone |
-| Yours | Preferences, written below the commandments in your own file. [examples/personal.md](examples/personal.md) is one |
-| Project | Facts an agent cannot discover, and the checks that enforce the rules |
-| Workflows | Skills and stacks you like, loaded when needed |
+The commandments are the same for everyone. Your preferences go below them in your own file ([examples/personal.md](examples/personal.md) is one). Project files hold the facts an agent cannot discover. Workflows and skills load when needed.
 
 A written rule is followed some of the time. A check fails every time. Anything that must hold belongs in a type, a lint rule, a test, or a hook.
 
@@ -77,7 +72,7 @@ The installer never overwrites a file you already have, and removes only the lin
 - Stronger models gamed impossible tests more often than weaker ones. [ImpossibleBench](https://arxiv.org/html/2510.20270v1)
 - Vendors delete guidance as models improve: [Anthropic](https://claude.dev/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models/), [OpenAI](https://developers.openai.com/api/docs/guides/prompt-guidance-gpt-5p6.md).
 
-`eval/` holds 17 small trap tasks with hidden scorers, a sandboxed runner for opencode, and a runner for Claude Code. `python3 eval/validate_task.py eval/tasks/conflicting-test` checks one task.
+`eval/` holds 17 trap tasks with hidden scorers and runners for opencode and Claude Code.
 
 ## Changing a commandment
 
