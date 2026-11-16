@@ -2,7 +2,7 @@
 
 Ten commandments for AI agents: the few rules that stay true for any model, any tool, and any kind of work. Your own preferences, project rules, and workflows go on top.
 
-They are in [AGENTS.md](AGENTS.md), 357 words.
+They are in [AGENTS.md](AGENTS.md): ten sentences and a short preface, 163 words.
 
 ## Install
 
@@ -64,23 +64,36 @@ Paths were checked against each tool's documentation or source in November 2026.
 
 The installer never overwrites a file you already have, and removes only the links it made.
 
-## Evidence
+## Measured
+
+Bare Claude agents (Haiku, Sonnet, Opus) ran 17 trap tasks with no instruction file. The seven tasks that showed any difference were then run three times per model with each version of the text, 63 runs per version.
+
+| Text given to the agent | Words | Passed scripted checks | Passed including report quality |
+|---|---|---|---|
+| Nothing | 0 | 48 | 36 |
+| The ten commandments | 163 | 55 | 42 |
+| The ten, with one to three sentences of explanation each | 357 | 49 | 33 |
+
+- Thirteen of the seventeen tasks were passed every time with no instructions at all.
+- The tenth commandment had the largest effect. After a repeated mistake, agents added a real check in 8 of 9 runs with the commandments and in 3 of 9 without them.
+- Explanation made results worse: longer reports for a one-word fix, and refusal to clean up files that could be regenerated. So the file has none.
+
+`eval/` holds the tasks, their hidden scorers, and runners for opencode and Claude Code.
+
+## Background
 
 - Instruction files are obeyed but do not raise task success, and cost about 20% more tokens. [ETH Zurich](https://arxiv.org/abs/2602.11988)
 - A written rule was followed 64 to 78% of the time by a frontier model and under 21% by small open models. [Study](https://arxiv.org/html/2611.04367)
-- Agents followed a stale instruction file over the code in about 90% of choices until one sentence gave the code precedence. [Study](https://arxiv.org/html/2610.30571v1)
 - Stronger models gamed impossible tests more often than weaker ones. [ImpossibleBench](https://arxiv.org/html/2510.20270v1)
 - Vendors delete guidance as models improve: [Anthropic](https://claude.dev/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models/), [OpenAI](https://developers.openai.com/api/docs/guides/prompt-guidance-gpt-5p6.md).
 
-`eval/` holds 17 trap tasks with hidden scorers and runners for opencode and Claude Code.
-
 ## Changing a commandment
 
-A commandment changes only with an older principle from two different fields behind it and a task in `eval/` that agents fail without it. A clarifying sentence is added only when a task or a reading test fails without it.
+A commandment changes only with an older principle from two different fields behind it and a task in `eval/` that agents fail without it. A sentence of explanation needs a task where it helps. So far none has.
 
 ## Limits
 
-- The wording was tested for clear reading on three model tiers. Its effect on behaviour has not yet been measured across vendors.
+- Measured on Claude models only, in one tool, on small Python tasks. Nine of the ten describe what those models already did on these tasks. They are kept for weaker models and other tools, where they are not yet measured.
 - A written rule lowers the odds of a failure. It does not prevent one. Pair these with permissions, sandboxes, protected branches, and backups.
 
 ## License
