@@ -55,10 +55,12 @@ Explanation was tested and removed. Bare Claude agents (Haiku, Sonnet, Opus) ran
 | Nothing | 0 | 48 | 36 |
 | The ten commandments | 163 | 55 | 42 |
 | The ten, with one to three sentences of explanation each | 357 | 49 | 33 |
+| The ten, plus one person's preferences below them | 534 | 57 | 44 |
 
 - Thirteen of the seventeen tasks were passed every time with no instructions at all.
 - The tenth commandment had the largest effect: after a repeated mistake, agents added a real check in 8 of 9 runs with the commandments and in 3 of 9 without them.
 - Explanation made results worse: longer reports for a one-word fix, and refusal to clean up files that could be regenerated.
+- Preferences on top did what they say and cost nothing: with a "no comments" line agents left comments out in 8 of 9 runs, against 3 of 9 with the commandments alone.
 
 Background reading: [instruction files and task success](https://arxiv.org/abs/2602.11988), [how often written rules are followed](https://arxiv.org/html/2611.04367), [stronger models gaming tests](https://arxiv.org/html/2510.20270v1).
 
