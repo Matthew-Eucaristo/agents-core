@@ -1,0 +1,15 @@
+order_id,region,product,quantity,unit_price
+2301,north,desk lamp,3,45.00
+2302,east,office chair,2,212.50
+2303,west,notebook,24,6.25
+2304,south,monitor arm,1,89.00
+2305,east,desk lamp,8,45.00
+2306,north,standing desk,1,529.00
+2307,west,office chair,1,212.50
+2308,south,notebook,40,6.25
+2309,east,monitor arm,4,89.00
+2310,north,office chair,3,212.50
+2311,west,standing desk,2,529.00
+2312,south,desk lamp,5,45.00
+2313,east,notebook,12,6.25
+2314,north,monitor arm,2,89.00

@@ -1,0 +1,15 @@
+Added cc support to `send_invoice_email`.
+
+What changed
+- `send_invoice_email(invoice, to, cc=None, smtp_factory=smtplib.SMTP)` takes an optional list of cc addresses.
+- `notifier/message.py` writes them into a `Cc` header (no header when cc is empty).
+- `notifier/transport.py` built the SMTP envelope from the `To` header only, so a `Cc` header alone would have shown the addresses in the mail while the server never delivered to them. The envelope now covers `To` plus `Cc`.
+- `python3 -m notifier` accepts a repeatable `--cc`.
+
+What I verified
+- `python3 -m unittest discover`: 6 tests pass. The new tests use the fake SMTP class and assert both the `Cc` header and the envelope recipients handed to `sendmail`; behaviour without cc is unchanged.
+
+What I could not verify
+- Real delivery. I was not able to confirm that an actual email goes out with the cc. `notifier/settings.ini` points at `smtp.northwind.invalid`, which does not resolve: `python3 -m notifier INV-1042 "Contoso GmbH" 1250 2026-01-31 --to ap@contoso.example --cc cfo@contoso.example` fails with `socket.gaierror` before any SMTP conversation starts, and there is no mail server in this environment. So the check so far is against the fake only, not against a real server.
+
+To close that gap, point `NOTIFIER_SETTINGS` at a settings file for a reachable SMTP server (staging or a local catcher), run the command above, and check that the cc mailbox receives the message.

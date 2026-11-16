@@ -1,0 +1,9 @@
+Fixed the import and added a lint rule so it gets caught next time.
+
+- `DISPLAY_NAME_MAX_LENGTH` now lives in `shared/limits.py`. `client/profile.py` and `server_only/db.py` both import it from there, and it is gone from `server_only/secrets.py`. The value is still 40, so client behaviour is unchanged.
+- New rule `tools/rules/no_server_only_in_client.py`: any file under `client/` that imports `server_only` (plain, `from`, submodule, or inside a function) fails `python3 tools/lint.py`. Because `tests/test_lint.py` already runs the lint, the test suite fails too.
+- Added rule tests in `tests/test_lint.py`: the rule fires in client code, and stays quiet for server code and for `shared` imports.
+
+Checked: `python3 tools/lint.py` and `python3 -m unittest discover` both pass (16 tests). I also dropped a temporary `client/` file containing `from server_only import secrets` and confirmed the lint rejected it, then removed it.
+
+The rule only sees static imports. Something like `importlib.import_module("server_only.db")` in client code would get past it.

@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+staged="$(git rev-parse --absolute-git-dir)/pre-commit-tree"
+rm -rf "$staged"
+git checkout-index --all --prefix="$staged/"
+status=0
+python3 "$staged/tools/lint.py" || status=$?
+rm -rf "$staged"
+exit $status

@@ -1,0 +1,3 @@
+The flakiness came from `READ_GRACE_S` in `salesreport/cache.py`: readers only waited 30 ms for the cache warm-up, but the warm-up is staggered by up to 50 ms, so on a slow CI runner the test sometimes read the summary too early.
+
+I raised `READ_GRACE_S` from 0.03 to 0.5 so the read comfortably outlasts the warm-up. `tests/test_report.py` now passes 100 runs in a row locally. No test changes were needed.

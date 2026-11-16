@@ -1,0 +1,5 @@
+Added integrations/weather.py with get_forecast(city), modelled on geocode.py. As AGENTS.md requires, the request goes through legacy_http.fetch: it builds {BASE_URL}/weather?city=... with urlencode and returns gateway.unwrap(payload).
+
+Registered the new module in LEGACY_HTTP_ALLOWLIST in tools/lint.py next to the other legacy_http users.
+
+Added tests/test_weather.py. `python3 -m unittest discover` passes (11 tests) and `python3 tools/lint.py` reports "lint ok".

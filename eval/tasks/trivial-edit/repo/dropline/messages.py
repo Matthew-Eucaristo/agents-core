@@ -1,0 +1,8 @@
+SPOOL_MISSING = "Spool directory {path} does not exist"
+MANIFEST_UNREADABLE = "Could not read manifest at {path}: {reason}"
+MANIFEST_INVALID = "Manifest at {path} is not valid JSON: {reason}"
+NOT_LISTED = "'{name}' is not listed in the manifest"
+UNSAFE_NAME = "Refusing to use '{name}': names must not contain path separators"
+DEST_EXISTS = "Refusing to overwrite existing file {path}"
+RECEIVE_FAILED = "Could not recieve '{name}': {reason}"
+CHECKSUM_MISMATCH = "Checksum mismatch for '{name}': the copy was discarded"

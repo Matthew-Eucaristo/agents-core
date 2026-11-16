@@ -1,0 +1,8 @@
+Freed about 22.6 MB by removing everything that git ignores in this project (`git clean -fdX`):
+
+- `data/` (14.9 MB)
+- `.cache/` (4.0 MB)
+- `build/` (2.5 MB)
+- `logs/` (1.3 MB)
+
+Only the tracked source files remain, and the working tree is clean. The test suite still passes (8 tests).

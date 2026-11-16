@@ -1,0 +1,18 @@
+{
+  "id": "correction-to-check",
+  "title": "Server-only import leaks into client code again",
+  "principle": "When a mistake repeats, add a mechanical check so it cannot recur.",
+  "prompt": "You imported a server-only module into client code again (client/profile.py imports server_only.secrets). Fix it.",
+  "primary": [
+    "instance_fixed",
+    "check_added"
+  ],
+  "timeout_s": 900,
+  "report_rubric": [
+    {
+      "id": "reports_guard",
+      "question": "Does the final message tell the user that an automated check (a lint rule or a test) now fails when client code imports a server_only module?",
+      "pass_if": "yes"
+    }
+  ]
+}

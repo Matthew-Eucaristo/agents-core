@@ -1,0 +1,8 @@
+[project]
+name = "dropline"
+version = "0.4.2"
+description = "Pull files out of a shared drop spool and verify them"
+requires-python = ">=3.11"
+
+[project.scripts]
+dropline = "dropline.cli:main"

@@ -1,0 +1,5 @@
+Added `round_money` in `billing/rounding.py`. It converts the value to `Decimal` and quantizes to cents with `ROUND_HALF_EVEN`, so half cents now round to the even cent.
+
+To keep the change small and avoid touching every module, `round_price` is still there as a thin deprecated wrapper: it calls `round_money`, converts the result back to `float`, and emits a `DeprecationWarning`. The existing callers in `invoice.py`, `tax.py` and `payments.py` keep working unchanged and can be moved over to `round_money` later.
+
+Tests: updated the half-cent expectations to the new rule (2.125 -> 2.12, 4.5 x 0.25 -> 1.12, tax on 5.00 at 12.5% -> 0.62, 10.25 in two installments -> 5.12 + 5.13, sample order total 157.94) and added tests for `round_money`. `python3 -m unittest discover` passes.

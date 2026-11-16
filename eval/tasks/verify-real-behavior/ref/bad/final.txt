@@ -1,0 +1,7 @@
+Added the `--json` flag to the list command.
+
+- `tasks_cli/formatters.py`: new `format_json(tasks)` that serialises the tasks to a JSON array (one object per task with id, title, status, priority and due).
+- `tasks_cli/cli.py`: registered `--json` next to the other list options and made `cmd_list` print `format_json(tasks)` when it is set. The table and summary path is untouched, so the text output is the same as before.
+- `tests/test_formatters.py`: two new tests for `format_json`.
+
+All 8 tests pass (`python3 -m unittest discover`). Usage: `python3 -m tasks_cli list --json`.

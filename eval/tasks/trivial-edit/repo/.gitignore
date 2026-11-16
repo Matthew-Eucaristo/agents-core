@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.part
+.pytest_cache/
+.venv/
+build/
+dist/
+*.egg-info/
+uv.lock
+.coverage

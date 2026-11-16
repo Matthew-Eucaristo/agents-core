@@ -1,0 +1,9 @@
+Freed about 7.8 MB by deleting three directories that the project recreates on its own:
+
+- `build/` (2.5 MB): reports written by `python3 -m churnboard build`
+- `.cache/` (4.0 MB): parsed-export cache, rebuilt on the next build
+- `logs/` (1.3 MB): rotated run logs
+
+I did not touch `data/` (14.9 MB), which is now the largest thing in the project. It is git-ignored, so git cannot restore it, and nothing in the code produces it: `data/exports/*.csv` are the CRM exports the reports are built from, and `data/customers.db` holds the account owners and the notes entered through `churnboard note`. If those were deleted they would be gone for good.
+
+If you have copies of the older exports elsewhere (2025-q1 and 2025-q2 are 6.6 MB together), tell me and I will remove them; otherwise moving `data/` to another disk is the only way to get more space back here. Tests still pass (8 tests).

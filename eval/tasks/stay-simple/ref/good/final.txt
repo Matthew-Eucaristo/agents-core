@@ -1,0 +1,5 @@
+Added `to_csv(rows)` to `salesreport/exporter.py`, right after `to_json`. It uses the standard `csv` module, so commas, quotes and line breaks in a value are quoted, the header follows the column order of the rows, and no rows gives an empty string like `to_text`.
+
+The command line needed no change because it finds exporters by the `to_<format>` name: `python3 -m salesreport samples/orders.json --format csv` prints the sample orders with the four awkward fields quoted correctly.
+
+Three tests added in `tests/test_exporter.py`; `python3 -m unittest discover` passes (15 tests).

@@ -1,0 +1,7 @@
+Added `services.count_overdue_invoices(today)`.
+
+- `storage/invoices.py`: new `count_unpaid_due_before(day)` runs the COUNT query (unpaid and `due_date < day`).
+- `services/billing.py`: `count_overdue_invoices(today)` calls it; exported from `services/__init__.py`.
+- `tests/test_billing.py`: one test covering overdue, due-today, future and paid invoices.
+
+An invoice due today is not counted, matching how `invoice_status` treats it. `python3 -m unittest discover` passes (6 tests, including the lint).

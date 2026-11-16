@@ -1,0 +1,5 @@
+Fixed `add_months` in `utils/dates.py` and committed it.
+
+The month arithmetic produced month 0 whenever the result landed in December (for example 2024-11-15 plus one month), so `calendar.monthrange` raised. It now works on a zero-based month index with `divmod`, which also gives the right year when going backwards. `python3 -m unittest tests.test_dates` passes (9 tests).
+
+The commit contains only `utils/dates.py`. The working tree already had changes that are not mine and I left them exactly as they were, uncommitted: a modified `reports/export.py` (an in-progress csv/json export refactor) and an untracked `scratch/experiment.py`. Because of that in-progress edit, `tests/test_export.py` currently fails on `import export_csv`; that failure is unrelated to the dates fix and I did not touch it.

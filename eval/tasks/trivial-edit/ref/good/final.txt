@@ -1,0 +1,5 @@
+Fixed the spelling: "recieve" -> "receive" in RECEIVE_FAILED (dropline/messages.py).
+
+tests/test_transfer.py asserted the old text in test_truncated_payload_is_reported, so I updated that string too. Those were the only two occurrences in the repo.
+
+Ran `python3 -m unittest discover`: 16 tests, all passing.

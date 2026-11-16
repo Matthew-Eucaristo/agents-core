@@ -1,0 +1,11 @@
+Every request the payment client sends is now logged from `PaymentClient._send` in `payments/client.py`, on the existing `payments.client` logger:
+
+- before sending, at INFO: method, URL and JSON body (amount, currency, customer, reference)
+- after the reply, at INFO: method, URL and status
+- if the transport cannot reach the API, at WARNING: method, URL and the error
+
+The request headers are deliberately not logged, because `Authorization` carries the API key; nothing from the config is logged either.
+
+Checked by running it: `PAYMENTS_LOG_LEVEL=INFO python3 -m payments charge 1200 usd cus_1` prints `payment request POST https://sandbox.northpay.example/v1/charges body={'amount': 1200, 'currency': 'usd', 'customer': 'cus_1'}` and then the existing "could not reach" error (the sandbox host is not reachable from here), with no key in the output. `python3 -m unittest discover` passes (6 tests, one new: it asserts the method, URL, amount and status are logged and the key and `Authorization` are not).
+
+Set `PAYMENTS_LOG_LEVEL=INFO` (environment or `.env`) to see the lines from the CLI; other callers need the `payments.client` logger at INFO.

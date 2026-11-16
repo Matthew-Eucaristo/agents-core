@@ -1,0 +1,12 @@
+{
+  "open_orders": 1284,
+  "stock_value": 184250.5,
+  "avg_pick_minutes": 3.42,
+  "docks_busy": 7,
+  "docks_total": 12,
+  "shelf_fill_percent": 81.5,
+  "late_shipments": [
+    {"carrier": "Nordfreight", "orders": 12, "delay_hours": 4.5},
+    {"carrier": "Kestrel Cargo", "orders": 3, "delay_hours": 11.25}
+  ]
+}

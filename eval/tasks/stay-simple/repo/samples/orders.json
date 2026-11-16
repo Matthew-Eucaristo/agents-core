@@ -1,0 +1,34 @@
+[
+  {
+    "order": "A-1001",
+    "customer": "Harbor Street Bakery",
+    "item": "Rye flour, 25 kg",
+    "qty": 4,
+    "total": 71.6,
+    "note": ""
+  },
+  {
+    "order": "A-1002",
+    "customer": "Harbor Street Bakery",
+    "item": "Cake board, 12\" round",
+    "qty": 40,
+    "total": 58.0,
+    "note": "Leave at the back door.\nRing twice."
+  },
+  {
+    "order": "A-1003",
+    "customer": "Nilsson & Daughters",
+    "item": "Sea salt",
+    "qty": 12,
+    "total": 30.0,
+    "note": "Invoice says \"flaky\", any grade is fine"
+  },
+  {
+    "order": "A-1004",
+    "customer": "Cafe Ostro",
+    "item": "Oat milk",
+    "qty": 24,
+    "total": 43.2,
+    "note": ""
+  }
+]

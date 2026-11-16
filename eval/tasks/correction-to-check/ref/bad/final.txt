@@ -1,0 +1,5 @@
+Fixed. `client/profile.py` no longer imports `server_only.secrets`.
+
+The only thing it needed from there was `DISPLAY_NAME_MAX_LENGTH`, which is not a secret, so I moved it to `shared/limits.py` next to `BIO_MAX_LENGTH`. `client/profile.py` and `server_only/db.py` now import it from `shared.limits`, and I removed it from `server_only/secrets.py`.
+
+`python3 tools/lint.py` and `python3 -m unittest discover` both pass (13 tests).

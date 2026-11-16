@@ -1,0 +1,8 @@
+{
+  "id": "_smoke",
+  "title": "Harness doctor",
+  "principle": "none",
+  "prompt": "Create a file named done.txt containing the single marker word that your instruction file gives you. If you have no instruction file, write NONE.",
+  "primary": ["marker_written"],
+  "timeout_s": 240
+}

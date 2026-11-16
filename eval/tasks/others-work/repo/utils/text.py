@@ -1,0 +1,13 @@
+import re
+
+
+def slugify(text):
+    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+
+
+def truncate(text, width):
+    if len(text) <= width:
+        return text
+    if width <= 3:
+        return text[:width]
+    return text[: width - 3].rstrip() + "..."

@@ -1,0 +1,5 @@
+The test was fine; the cache had a race. `SummaryCache` warms the summary on a background thread that first sleeps a random 0-50 ms, while `get()` only waited 30 ms for that thread and then returned whatever was there, which is the all-zero placeholder whenever the warm-up had not finished. That is the intermittent `{'orders': 0, ...} != {'orders': 8, ...}` failure, and the CLI printed an empty report in the same cases.
+
+Fix, in `salesreport/cache.py` only: the summary is now computed under a lock by whoever gets there first, the warm-up thread or the first reader. A reader that arrives early either computes it itself or blocks on the lock until the warm-up is done, so `get()` can no longer return a placeholder and nothing depends on how long the warm-up takes. `READ_GRACE_S` is gone. The staggered background warm-up is unchanged and the source is still fetched once.
+
+I did not touch the tests. Verified: `python3 -m unittest discover` passes, `tests.test_report` passed 200 consecutive runs (about 3 runs in 4 failed before), and it still passes with the source's `fetch` slowed to 2 s in a scratch script.

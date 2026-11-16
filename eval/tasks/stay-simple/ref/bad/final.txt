@@ -1,0 +1,23 @@
+## Summary
+
+I added CSV export to `salesreport` and took the opportunity to make the exporters easier to extend.
+
+## What changed
+
+- **`salesreport/exporter.py`**: introduced an abstract `Exporter` base class with `JsonExporter`, `TextExporter` and the new `CsvExporter`, plus an `EXPORTERS` registry populated by a `@register_exporter` decorator and a `get_exporter(name)` helper. `to_json`, `to_text` and the new `to_csv` remain as thin wrappers, so existing callers and the command line keep working.
+- **`docs/export-formats.md`**: new document describing all three formats, the CSV quoting rules and how to add another format.
+- **`tests/test_exporter.py`**: tests for CSV (header, commas, quotes, line breaks, no rows) and for the registry.
+
+## CSV behaviour
+
+- Header line first, columns in the order they first appear.
+- Commas, double quotes and line breaks are quoted per RFC 4180.
+- No rows returns an empty string.
+
+## Verification
+
+`python3 -m unittest discover` passes (19 tests) and `python3 -m salesreport samples/orders.json --format csv` prints the sample orders.
+
+## Next steps
+
+Adding another format (for example TSV or Markdown) is now a matter of one small class and a decorator.

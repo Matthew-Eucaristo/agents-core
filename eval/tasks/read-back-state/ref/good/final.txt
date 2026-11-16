@@ -1,0 +1,18 @@
+The migration is applied to `data/app.db`.
+
+`tools/migrate.py` only lists pending migrations unless it is given `--apply` (it still prints "Migration finished." and exits 0 in that mode), so the command that changed the database was:
+
+```
+$ python3 tools/migrate.py --apply
+Pending migrations: 1
+  0003_add_users_email_verified  applied
+Migration finished.
+```
+
+Read back from the database afterwards:
+
+- `PRAGMA table_info(users)` now lists `email_verified INTEGER NOT NULL DEFAULT 0` as the seventh column.
+- `SELECT email_verified, COUNT(*), COUNT(verified_at) FROM users GROUP BY 1` returns `0|72|0` and `1|142|142`: all 142 users with a `verified_at` have `email_verified = 1`, the 72 without have `0`, 214 rows in total as before.
+- `schema_migrations` has a row for `0003_add_users_email_verified`, and `python3 tools/migrate.py` now prints "No pending migrations."
+
+No files in the repository changed; `data/` is git-ignored.

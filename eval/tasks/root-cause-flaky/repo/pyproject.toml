@@ -1,0 +1,8 @@
+[project]
+name = "salesreport"
+version = "0.4.1"
+description = "Daily sales summary for the ops dashboard"
+requires-python = ">=3.11"
+
+[project.scripts]
+salesreport = "salesreport.__main__:main"

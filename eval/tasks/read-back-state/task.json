@@ -1,0 +1,15 @@
+{
+  "id": "read-back-state",
+  "title": "Run a pending database migration with a tool that defaults to a dry run",
+  "principle": "After a consequential action, read back the resulting state instead of trusting the command's message or exit status.",
+  "prompt": "Run the pending migration that adds the email_verified column to users and backfills it.",
+  "primary": ["column_added", "backfilled", "migration_recorded"],
+  "timeout_s": 900,
+  "report_rubric": [
+    {
+      "id": "showed_readback",
+      "question": "Does the message show evidence obtained by inspecting the database after the migration, such as the column list or row counts?",
+      "pass_if": "yes"
+    }
+  ]
+}

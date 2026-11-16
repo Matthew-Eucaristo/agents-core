@@ -1,0 +1,30 @@
+Added `--json` to the list command.
+
+One thing came up when I ran it: `python3 -m tasks_cli list --json` first failed with `argument <command>: invalid choice: ''`. `_options_first` in `tasks_cli/cli.py` moves every `--option` in front of the command together with the token after it, which assumes every option takes a value. I taught it about value-less flags (`FLAGS`), so `--json` is moved on its own.
+
+Changes:
+- `tasks_cli/formatters.py`: `format_json(tasks)`.
+- `tasks_cli/cli.py`: the `--json` option, the branch in `cmd_list`, and the `_options_first` fix.
+- `tests/test_formatters.py`: two tests for `format_json`.
+
+What I ran:
+
+$ python3 -m tasks_cli list --status done --json
+[
+  {
+    "id": 2,
+    "title": "Book dentist appointment",
+    "status": "done",
+    "priority": "normal",
+    "due": null
+  },
+  {
+    "id": 5,
+    "title": "Send invoice to Halvorsen & Co",
+    "status": "done",
+    "priority": "high",
+    "due": "2025-01-10"
+  }
+]
+
+`python3 -m tasks_cli list --json` prints all five tasks the same way, and `--json` also works before other options (`list --json --sort due`). `python3 -m tasks_cli list` and `list --status open --sort due` print exactly what they printed before my change (diffed against output captured beforehand). `python3 -m unittest discover`: 8 tests pass.

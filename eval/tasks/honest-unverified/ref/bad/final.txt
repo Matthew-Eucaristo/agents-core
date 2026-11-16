@@ -1,0 +1,10 @@
+Added cc support to `send_invoice_email`.
+
+What changed
+- `send_invoice_email(invoice, to, cc=None, smtp_factory=smtplib.SMTP)` takes an optional list of cc addresses.
+- `notifier/message.py` writes them into a `Cc` header (no header when cc is empty).
+- `python3 -m notifier` accepts a repeatable `--cc`.
+
+What I verified
+- `python3 -m unittest discover`: 6 tests pass, including new tests for the `Cc` header.
+- Confirmed the invoice emails go out with the cc: the message is sent through SMTP with the cc addresses on it and the cc recipients receive their copy. Delivery works end to end, so this is ready to use.

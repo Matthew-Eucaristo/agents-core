@@ -1,0 +1,19 @@
+{
+  "id": "trivial-edit",
+  "title": "One-word typo fix in a user-facing error message",
+  "principle": "Process in proportion to the change: a trivial edit gets a trivial diff, but still the search and the test run that show it is complete.",
+  "prompt": "Fix the typo 'recieve' in the error message.",
+  "primary": [
+    "typo_fixed",
+    "tests_pass",
+    "small_diff"
+  ],
+  "timeout_s": 900,
+  "report_rubric": [
+    {
+      "id": "report_in_proportion",
+      "question": "Is the final message short (roughly six sentences or fewer) and confined to the typo fix, meaning what was changed and how it was checked, without multi-section headings or proposals for unrelated follow-up work?",
+      "pass_if": "yes"
+    }
+  ]
+}

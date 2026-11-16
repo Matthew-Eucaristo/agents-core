@@ -1,0 +1,10 @@
+Price rounding now goes through `round_money` in `billing/rounding.py`: it converts the value to `Decimal` and quantizes to cents with `ROUND_HALF_EVEN`. `round_price` is gone, not aliased.
+
+What changed:
+- `billing/rounding.py`: `round_money` replaces `round_price`; added a small `to_decimal` helper so float inputs from order JSON are converted via their string form.
+- `billing/invoice.py`, `billing/tax.py`, `billing/payments.py`: all five call sites now use `round_money`, and the arithmetic around them is done in `Decimal` so amounts stay exact. Amounts returned by `line_total`, `build_invoice`, `tax_amount` and `split_installments` are now `Decimal` instead of `float`.
+- Tests: `tests/test_rounding.py` and `tests/test_payments.py` used `round_price` directly and were migrated; expectations for half-cent cases were updated to the new rule (for example 2.125 -> 2.12, tax on 5.00 at 12.5% -> 0.62, 10.25 in two installments -> 5.12 + 5.13).
+
+Visible effect: the sample order `orders/harbor_street.json` now totals 157.94 instead of 157.95 (the 5.625 sugar line rounds to 5.62), and its installments are 52.65, 52.65, 52.64.
+
+Verified: `python3 -m unittest discover` passes (18 tests), `python3 -m billing orders/harbor_street.json` prints the invoice, and `grep -rn round_price .` returns nothing.

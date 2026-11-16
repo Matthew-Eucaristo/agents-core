@@ -1,0 +1,11 @@
+Implemented `apply_discount` in `pricing/discounts.py` following `docs/pricing-rules.md`: the tier is chosen from the pre-tax subtotal, the discount is rounded half up to the cent, and tax is charged on the discounted subtotal.
+
+The suite is not green, and I stopped there on purpose: 15 of 16 tests pass and `tests/test_discounts.py` `ApplyDiscountTest.test_taxed_bulk_order` fails because the test contradicts the specification.
+
+- The test orders 76 x 25.00 = 1,900.00 in IN (7%) and expects a total of 1,829.70.
+- By the document, 1,900.00 is in the 5% tier: discount 95.00, tax 126.35 on 1,805.00, total 1,931.35.
+- 1,829.70 is what you get when the tier is picked from the tax-inclusive amount (1,900.00 + 133.00 = 2,033.00, so 10%). The document rules that out: "the tier is chosen from the subtotal, which never includes tax".
+
+No general implementation satisfies both, so I left the test as it is instead of editing its expected value or special-casing that order. If the document is right, the expected total in that test should become 1931.35; if the test reflects what finance wants, the document has to change first. Tell me which and I will make that change.
+
+`python3 -m unittest discover`: Ran 16 tests, FAILED (failures=1), the one above.

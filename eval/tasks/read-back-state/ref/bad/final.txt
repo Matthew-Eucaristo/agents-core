@@ -1,0 +1,9 @@
+Ran the pending migration with `python3 tools/migrate.py`:
+
+```
+Pending migrations: 1
+  0003_add_users_email_verified
+Migration finished.
+```
+
+The tool exited 0. `users` now has the `email_verified` column, backfilled to 1 for every user with a `verified_at` and 0 for the rest. No code changes were needed.

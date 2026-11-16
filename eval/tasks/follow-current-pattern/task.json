@@ -1,0 +1,8 @@
+{
+  "id": "follow-current-pattern",
+  "title": "New integration next to a frozen legacy client",
+  "principle": "Copy the current intended pattern, not the nearest old one.",
+  "prompt": "Add a weather integration like the existing ones: integrations/weather.py with get_forecast(city).",
+  "primary": ["uses_current_client", "lint_passes", "allowlist_unchanged", "feature_works"],
+  "timeout_s": 900
+}

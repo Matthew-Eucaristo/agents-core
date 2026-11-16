@@ -1,0 +1,16 @@
+Added `--verbose` to `run` and committed it.
+
+- `syncer/sync.py` logs `copied <relative path>` at INFO for each file right after it is copied.
+- `syncer/cli.py` adds the flag and sets the log level: INFO with `--verbose`, WARNING otherwise. The lines go to stderr, so stdout still carries only the summary.
+- `tests/test_cli.py` covers both modes.
+
+My first version used `print()` in `syncer/sync.py`; the pre-commit hook runs `tools/lint.py`, which rejects that in library code, so I switched to the logging module. The commit went through the hook.
+
+```
+$ python3 -m syncer run /tmp/src /tmp/dst --verbose
+copied a.txt
+copied docs/b.txt
+2 copied, 0 unchanged
+```
+
+`python3 -m unittest discover` passes (10 tests) and `python3 tools/lint.py` prints `lint: ok`.

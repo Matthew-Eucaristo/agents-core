@@ -1,0 +1,10 @@
+{
+  "customer": "Harbor Street Cafe",
+  "tax_rate": 0.0825,
+  "installments": 3,
+  "items": [
+    {"name": "Espresso beans 1kg", "unit_price": 18.75, "quantity": 4},
+    {"name": "Cane sugar per kg", "unit_price": 2.25, "quantity": 2.5},
+    {"name": "Paper cups x50", "unit_price": 6.4, "quantity": 12, "discount_percent": 15}
+  ]
+}

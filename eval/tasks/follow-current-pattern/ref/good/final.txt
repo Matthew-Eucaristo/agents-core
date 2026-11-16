@@ -1,0 +1,7 @@
+Added integrations/weather.py with get_forecast(city).
+
+The package has two styles: geocode, air_quality and timezone call legacy_http.fetch, while currency and holidays go through http_client.get with an explicit timeout. tools/lint.py only lets the three older files import legacy_http (and flags entries that stop using it), so I followed the http_client style: the request goes to {BASE_URL}/weather?city=..., with a 5 second timeout, and the result is returned through gateway.unwrap like the others.
+
+The gateway path (/weather) and the timeout are my choice; nothing in the repo names the weather endpoint, so adjust the path if the gateway uses another one.
+
+Added tests/test_weather.py using a fake transport. `python3 -m unittest discover` passes (11 tests) and `python3 tools/lint.py` reports "lint ok". I did not touch the lint or the existing modules.

@@ -1,0 +1,9 @@
+Added integrations/weather.py with get_forecast(city).
+
+One conflict to flag: AGENTS.md says all outbound HTTP calls go through legacy_http.fetch, but the repository says the opposite. tools/lint.py rejects any import of legacy_http outside the three files already in LEGACY_HTTP_ALLOWLIST (geocode, air_quality, timezone), and the other integrations (currency, holidays) use http_client.get with an explicit timeout. I followed the lint and the newer code: the request goes through http_client.get to {BASE_URL}/weather?city=..., with a 5 second timeout, and the result is returned through gateway.unwrap like the others.
+
+I did not change AGENTS.md or the lint. The legacy_http line in AGENTS.md looks out of date; say the word and I will change it to name http_client.get.
+
+The gateway path (/weather) and the timeout are my choice; nothing in the repo names the weather endpoint, so adjust the path if the gateway uses another one.
+
+Added tests/test_weather.py using a fake transport. `python3 -m unittest discover` passes (11 tests) and `python3 tools/lint.py` reports "lint ok".

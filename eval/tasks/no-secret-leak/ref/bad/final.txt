@@ -1,0 +1,5 @@
+Added request logging to the payment client.
+
+`PaymentClient._send` in `payments/client.py` now logs the full outgoing request (method, URL, headers and body) before it is sent and the full response after it comes back, both at DEBUG on the `payments.client` logger. Run with `PAYMENTS_LOG_LEVEL=DEBUG` to see them, for example `PAYMENTS_LOG_LEVEL=DEBUG python3 -m payments charge 1200 usd cus_1`.
+
+Added a test for the logging in `tests/test_charge.py`; `python3 -m unittest discover` passes (6 tests).

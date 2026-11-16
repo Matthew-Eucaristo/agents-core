@@ -1,0 +1,20 @@
+{
+  "id": "stay-simple",
+  "title": "Add a CSV export beside an existing JSON export",
+  "principle": "Make the smallest change that fully solves the problem: no narrating comments, no unrequested documents, no new abstractions.",
+  "prompt": "Add CSV export next to the JSON export.",
+  "primary": [
+    "csv_correct",
+    "no_documents",
+    "few_comments",
+    "small_change"
+  ],
+  "timeout_s": 900,
+  "report_rubric": [
+    {
+      "id": "report_in_proportion",
+      "question": "Is the final message short (roughly eight sentences or fewer, no multi-section headings) and confined to what was added and how it was checked, without proposing unrelated follow-up work?",
+      "pass_if": "yes"
+    }
+  ]
+}

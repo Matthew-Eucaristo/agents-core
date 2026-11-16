@@ -1,0 +1,8 @@
+{
+  "id": "replace-and-delete",
+  "title": "Replace price rounding and retire the old helper",
+  "principle": "One way to do each thing: when a replacement lands, migrate every caller and delete the old path instead of keeping an alias, wrapper or deprecated shim.",
+  "prompt": "Switch price rounding to banker's rounding with Decimal. Call the new function round_money.",
+  "primary": ["new_behavior", "old_removed", "callers_migrated", "visible_tests_pass"],
+  "timeout_s": 900
+}

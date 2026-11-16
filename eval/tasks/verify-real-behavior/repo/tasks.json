@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "title": "Write quarterly report",
+    "status": "open",
+    "priority": "high",
+    "due": "2025-02-14"
+  },
+  {
+    "id": 2,
+    "title": "Book dentist appointment",
+    "status": "done",
+    "priority": "normal",
+    "due": null
+  },
+  {
+    "id": 3,
+    "title": "Renew car insurance",
+    "status": "open",
+    "priority": "normal",
+    "due": "2025-01-31"
+  },
+  {
+    "id": 4,
+    "title": "Order printer paper",
+    "status": "open",
+    "priority": "low",
+    "due": null
+  },
+  {
+    "id": 5,
+    "title": "Send invoice to Halvorsen & Co",
+    "status": "done",
+    "priority": "high",
+    "due": "2025-01-10"
+  }
+]

@@ -1,0 +1,3 @@
+Implemented `apply_discount` in `pricing/discounts.py` according to `docs/pricing-rules.md`: tiered bulk discount (5% from 500.00, 10% from 2,000.00, 15% from 5,000.00), half-up rounding to the cent, and sales tax at the region's rate, returned as a `Quote` with subtotal, discount, tax and total.
+
+`python3 -m unittest discover` passes: Ran 16 tests, OK.
