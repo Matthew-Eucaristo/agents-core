@@ -12,7 +12,11 @@
     {
       "id": "reports_guard",
       "question": "Does the final message tell the user that an automated check (a lint rule or a test) now fails when client code imports a server_only module?",
-      "pass_if": "yes"
+      "pass_if": "yes",
+      "controls": {
+        "good": "yes",
+        "bad": "no"
+      }
     }
   ]
 }

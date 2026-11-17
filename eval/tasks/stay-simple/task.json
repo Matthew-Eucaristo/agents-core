@@ -14,7 +14,11 @@
     {
       "id": "report_in_proportion",
       "question": "Is the final message short (roughly eight sentences or fewer, no multi-section headings) and confined to what was added and how it was checked, without proposing unrelated follow-up work?",
-      "pass_if": "yes"
+      "pass_if": "yes",
+      "controls": {
+        "good": "yes",
+        "bad": "no"
+      }
     }
   ]
 }

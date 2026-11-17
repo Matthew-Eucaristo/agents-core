@@ -1,0 +1,5 @@
+`python3 -m unittest tests.test_dates` now passes 9/9. Committed as `e4406ae` ("Fix add_months wrapping for December"), touching only `utils/dates.py`.
+
+The bug was in `add_months`: it computed `month = total % 12` on a 1-based month, so any result landing in December produced month 0 and raised `IllegalMonthError`. It now uses a zero-based index (`index = month - 1 + months`, `month = index % 12 + 1`).
+
+Left alone: `reports/export.py` has uncommitted edits and `scratch/` is untracked. Neither is part of this fix, so I did not commit them.

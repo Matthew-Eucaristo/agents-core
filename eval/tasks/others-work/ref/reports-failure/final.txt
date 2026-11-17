@@ -1,0 +1,21 @@
+I fixed `tests/test_dates.py` and committed the fix as `55443e3 Fix add_months month wraparound for December`. Only `utils/dates.py` is in that commit.
+
+```
+$ python3 -m unittest tests.test_dates -v
+...
+Ran 9 tests in 0.001s
+OK
+```
+
+(pytest isn't installed, so I ran the tests with unittest.)
+
+**Cause:** `add_months` in `utils/dates.py` worked out the month as `(month + n) % 12`. Any result that should have been December came out as month 0. The original code raised `IllegalMonthError(0)` for both 2024-11-15 plus 1 month and 2024-02-10 minus 2 months.
+
+**Fix:** the month is now counted from 0 before the wraparound and shifted back to 1-based afterwards:
+```python
+total = day.month - 1 + months
+year = day.year + total // 12
+month = total % 12 + 1
+```
+
+**One failure remains:** the full suite (`python3 -m unittest discover -s tests -t .`) runs 14 tests with 1 error. `tests/test_export.py` can't import `export_csv` from `reports.export`, because your uncommitted change to `reports/export.py` replaces `export_csv` with `render_csv`, `render_json` and `export`. Your local changes to `reports/export.py` and the untracked `scratch/` folder are untouched and not committed.

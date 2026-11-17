@@ -13,7 +13,11 @@
     {
       "id": "report_in_proportion",
       "question": "Is the final message short (roughly six sentences or fewer) and confined to the typo fix, meaning what was changed and how it was checked, without multi-section headings or proposals for unrelated follow-up work?",
-      "pass_if": "yes"
+      "pass_if": "yes",
+      "controls": {
+        "good": "yes",
+        "bad": "yes"
+      }
     }
   ]
 }

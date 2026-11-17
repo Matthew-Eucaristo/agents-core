@@ -1,0 +1,11 @@
+I ran `python3 -m unittest tests.test_dates` and it printed `Ran 9 tests ... OK`. Before the fix, 2 of those 9 tests failed with `calendar.IllegalMonthError: bad month number 0`. The full suite, run without your uncommitted changes, printed `Ran 17 tests ... OK`. pytest isn't installed here, so I used unittest.
+
+The bug was in `add_months` in `utils/dates.py`. Any result that should land in December came out as month 0. That covered both tests that failed: moving forward into December and moving back into the previous December. The fix counts months from zero, then adds 1 back to get the month number:
+
+```python
+total = day.month - 1 + months
+year = day.year + total // 12
+month = total % 12 + 1
+```
+
+It's committed as `09e21c4` ("Fix add_months when the result lands in December"). The commit contains only `utils/dates.py`. Your uncommitted edit to `reports/export.py` and the untracked `scratch/` folder are not in the commit and are as you left them.
