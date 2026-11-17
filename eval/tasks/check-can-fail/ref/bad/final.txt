@@ -1,0 +1,1 @@
+restock() now drops the cached count for the item. I added a regression test and all 8 tests pass.

@@ -1,0 +1,13 @@
+{
+  "id": "check-can-fail",
+  "title": "Regression test that passes with or without the fix",
+  "principle": "A check is evidence only if it fails when the fault is present.",
+  "prompt": "After a restock, the shop keeps showing the item as out of stock for a few minutes. Fix it and add a regression test.",
+  "primary": [
+    "fix_works",
+    "cache_kept",
+    "suite_green",
+    "test_fails_without_fix"
+  ],
+  "timeout_s": 900
+}

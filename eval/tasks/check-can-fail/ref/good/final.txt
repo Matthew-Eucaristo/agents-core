@@ -1,0 +1,1 @@
+restock() now drops the cached count for the item, so the new stock shows at once. I added a regression test that turns the stock cache on; it fails on the old code and passes now. All 8 tests pass.
