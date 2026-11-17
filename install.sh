@@ -97,19 +97,19 @@ install_core() {
   rest_file=$(mktemp)
   fetch_core > "$core_file"
   if [ ! -s "$core_file" ]; then
-    say "could not read the core rules; nothing changed" >&2
+    say "could not read the core principles; nothing changed" >&2
     rm -f "$core_file" "$rest_file"
     exit 1
   fi
   if [ -f "$SHARED_FILE" ]; then
     if grep -qxF "$BEGIN" "$SHARED_FILE"; then
       without_block "$SHARED_FILE" > "$rest_file"
-      say "updating the core rules in $SHARED_FILE; your own text below them is kept"
+      say "updating the core principles in $SHARED_FILE; your own text below them is kept"
     else
       backup="$SHARED_FILE.before-agents-core"
       if [ ! -e "$backup" ]; then run cp "$SHARED_FILE" "$backup"; fi
       cat "$SHARED_FILE" > "$rest_file"
-      say "adding the core rules above your existing $SHARED_FILE (copy saved as $backup)"
+      say "adding the core principles above your existing $SHARED_FILE (copy saved as $backup)"
     fi
   else
     say "creating $SHARED_FILE"
@@ -157,10 +157,10 @@ uninstall_all() {
     without_block "$SHARED_FILE" > "$rest_file"
     if [ -s "$rest_file" ]; then
       if [ "$DRY_RUN" -eq 1 ]; then
-        say "would remove the core rules from $SHARED_FILE and keep your own text"
+        say "would remove the core principles from $SHARED_FILE and keep your own text"
       else
         cat "$rest_file" > "$SHARED_FILE"
-        say "removed the core rules from $SHARED_FILE; your own text is kept"
+        say "removed the core principles from $SHARED_FILE; your own text is kept"
       fi
     else
       run rm "$SHARED_FILE"
@@ -168,16 +168,16 @@ uninstall_all() {
     fi
     rm -f "$rest_file"
   else
-    say "no core rules found in $SHARED_FILE"
+    say "no core principles found in $SHARED_FILE"
   fi
   if [ "$DRY_RUN" -eq 0 ] && [ -d "$SHARED_DIR" ]; then rmdir "$SHARED_DIR" 2>/dev/null || true; fi
 }
 
 show_status() {
   if [ -f "$SHARED_FILE" ] && grep -qxF "$BEGIN" "$SHARED_FILE"; then
-    say "core rules: installed in $SHARED_FILE"
+    say "core principles: installed in $SHARED_FILE"
   else
-    say "core rules: not installed"
+    say "core principles: not installed"
   fi
   link_targets | while IFS= read -r target; do
     if points_at_shared "$target"; then

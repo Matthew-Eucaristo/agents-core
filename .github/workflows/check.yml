@@ -1,0 +1,34 @@
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  installer:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - run: sh tests/install_test.sh
+      - if: runner.os == 'Linux'
+        run: TEST_SH=dash dash tests/install_test.sh
+
+  tasks:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - run: |
+          for task in eval/tasks/[a-z]*/; do
+            python3 eval/validate_task.py "$task" || exit 1
+          done

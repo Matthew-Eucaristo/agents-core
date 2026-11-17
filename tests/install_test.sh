@@ -2,6 +2,7 @@
 set -eu
 
 REPO=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+TEST_SH=${TEST_SH:-sh}
 WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT
 FAILED=0
@@ -20,7 +21,7 @@ check() {
 installer() {
   home=$1
   shift
-  HOME="$home" AGENTS_CORE_SOURCE="${CORE_SOURCE:-$REPO/AGENTS.md}" sh "$REPO/install.sh" "$@" > "$home.log" 2>&1
+  HOME="$home" AGENTS_CORE_SOURCE="${CORE_SOURCE:-$REPO/AGENTS.md}" "$TEST_SH" "$REPO/install.sh" "$@" > "$home.log" 2>&1
 }
 
 new_home() {
@@ -59,10 +60,12 @@ check "an existing file is backed up" same_text "$H/.agents/AGENTS.md.before-age
 check "the personal text is kept below the core" test "$(tail -n 3 "$H/.agents/AGENTS.md")" = "$(cat "$WORK/mine.md")"
 installer "$H" update
 check "updating keeps the personal text exactly once" test "$(count_of '## Mine' "$H/.agents/AGENTS.md")" = 1
+CORE_HEADING=$(head -n 1 "$REPO/AGENTS.md")
+check "the installed file holds the core heading" test "$(count_of "$CORE_HEADING" "$H/.agents/AGENTS.md")" = 1
 printf 'New core text.\n' > "$WORK/core2.md"
 CORE_SOURCE="$WORK/core2.md" installer "$H" update
 check "updating replaces the core text" test "$(count_of 'New core text.' "$H/.agents/AGENTS.md")" = 1
-check "updating removes the old core text" test "$(count_of 'Core rules for coding agents' "$H/.agents/AGENTS.md")" = 0
+check "updating removes the old core text" test "$(count_of "$CORE_HEADING" "$H/.agents/AGENTS.md")" = 0
 installer "$H" uninstall
 check "uninstall gives the personal file back unchanged" same_text "$H/.agents/AGENTS.md" "$WORK/mine.md"
 
@@ -88,10 +91,10 @@ check "a dry run links nothing" absent "$H/.claude/CLAUDE.md"
 
 H=$(new_home piped)
 mkdir -p "$H/.codex"
-(cd "$WORK" && HOME="$H" AGENTS_CORE_URL="file://$REPO/AGENTS.md" sh -s -- install < "$REPO/install.sh" > "$H.log" 2>&1)
+(cd "$WORK" && HOME="$H" AGENTS_CORE_URL="file://$REPO/AGENTS.md" "$TEST_SH" -s -- install < "$REPO/install.sh" > "$H.log" 2>&1)
 check "piped into sh, it fetches the core from the URL" test "$(count_of 'agents-core:begin' "$H/.agents/AGENTS.md")" = 1
 check "piped into sh, it links the tools it finds" is_link_to_shared "$H/.codex/AGENTS.md" "$H"
-(cd "$WORK" && HOME="$H" sh -s -- uninstall < "$REPO/install.sh" > "$H.log" 2>&1)
+(cd "$WORK" && HOME="$H" "$TEST_SH" -s -- uninstall < "$REPO/install.sh" > "$H.log" 2>&1)
 check "piped uninstall leaves nothing behind" absent "$H/.agents"
 
 exit "$FAILED"
