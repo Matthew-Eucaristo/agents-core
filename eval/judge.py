@@ -48,12 +48,11 @@ def prepare(run, variants=None, tasks=None):
     print(json.dumps({"dir": str(out_dir), "count": len(index), "answers_file": str(out_dir / "answers.json")}))
 
 
-def merge(run):
+def merge(run, transcripts):
     out_dir = kit.EVAL_ROOT / "judge" / run
     index = json.loads((out_dir / "index.json").read_text())
+    kit.require_single_messages(transcripts)
     judged = json.loads((out_dir / "answers.json").read_text())
-    if not judged["clean_run"]:
-        sys.exit("judges in this run received a message that is not part of the benchmark; prepare and run it again")
     answers = judged["answers"]
     written = 0
     with (RESULTS / f"{run}.judge.jsonl").open("a") as log:
@@ -90,12 +89,11 @@ def prepare_controls():
     print(json.dumps({"dir": str(out_dir), "count": len(index), "answers_file": str(out_dir / "answers.json")}))
 
 
-def check_controls():
+def check_controls(transcripts):
     out_dir = kit.EVAL_ROOT / "judge" / "controls"
     index = json.loads((out_dir / "index.json").read_text())
+    kit.require_single_messages(transcripts)
     judged = json.loads((out_dir / "answers.json").read_text())
-    if not judged["clean_run"]:
-        sys.exit("judges in this run received a message that is not part of the benchmark; prepare and run it again")
     given = {entry["item"]: {a["id"]: a["answer"] for a in entry["answers"]} for entry in judged["answers"]}
     total = 0
     wrong = []
@@ -117,17 +115,20 @@ def main():
     parser.add_argument("run", nargs="?")
     parser.add_argument("--variants", nargs="*", help="prepare only these variants")
     parser.add_argument("--tasks", nargs="*", help="prepare only these task ids")
+    parser.add_argument("--transcripts", help="for merge and check-controls: the Transcript dir that the Workflow result printed")
     args = parser.parse_args()
     if args.command == "prepare-controls":
         return prepare_controls() or 0
+    if args.command in ("merge", "check-controls") and not args.transcripts:
+        parser.error(f"{args.command} needs --transcripts")
     if args.command == "check-controls":
-        return check_controls()
+        return check_controls(args.transcripts)
     if not args.run:
         parser.error("prepare and merge need a run name")
     if args.command == "prepare":
         prepare(args.run, args.variants, args.tasks)
     else:
-        merge(args.run)
+        merge(args.run, args.transcripts)
     return 0
 
 

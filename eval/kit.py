@@ -47,6 +47,31 @@ def load_task(task_dir):
     return task
 
 
+def user_text(line):
+    entry = json.loads(line)
+    if entry.get("type") != "user":
+        return None
+    content = entry["message"]["content"]
+    if isinstance(content, list):
+        content = "\n".join(part.get("text", "") for part in content if part.get("type") == "text")
+    content = content.strip()
+    return None if not content or content.startswith("<system-reminder>") else content
+
+
+def require_single_messages(transcripts):
+    logs = sorted(pathlib.Path(transcripts).expanduser().glob("agent-*.jsonl"))
+    if not logs:
+        raise SystemExit(f"no agent transcripts in {transcripts}: pass the Transcript dir that the Workflow result printed")
+    stray = []
+    for log in logs:
+        said = [text for text in map(user_text, log.read_text().splitlines()) if text]
+        if len(said) != 1:
+            stray.append(f"{log.name} received {len(said)} messages; the first begins: {said[0][:160] if said else ''}")
+    if stray:
+        print("\n".join(stray))
+        raise SystemExit(f"{len(stray)} of {len(logs)} agents received a message that is not part of the benchmark; nothing recorded")
+
+
 def apply_overlay(repo, overlay):
     overlay = pathlib.Path(overlay)
     for source in overlay.rglob("*"):

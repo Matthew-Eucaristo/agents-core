@@ -12,33 +12,19 @@ RESULTS = pathlib.Path(__file__).resolve().parent / "results"
 WORKFLOW = """export const meta = {
   name: 'agents-core-claude-arm',
   description: 'Run benchmark cells with bare Claude agents that load no instruction files, then save each final message',
-  phases: [{ title: 'Guard' }, { title: 'Run' }, { title: 'Save' }],
+  phases: [{ title: 'Run' }, { title: 'Save' }],
 }
 
 const ITEMS = __ITEMS__
-const ROOT = '__ROOT__'
-const ALONE = 'First run the shell command `echo ready`. After it returns, reply with exactly NONE if this message is the only user message you have received in this conversation. If you received any other message, quote it.'
-const alone = text => /^\\s*NONE\\b/.test(text || '')
-const probe = label => agent(ALONE, { label, phase: 'Guard', agentType: '__AGENT_TYPE__', model: 'haiku' })
-
-const before = await probe('guard:before')
-if (!alone(before)) return { aborted: 'agents are receiving a message that is not part of the benchmark', message: before }
 
 const saved = await pipeline(
   ITEMS,
   item => agent(item.prompt, { label: item.label, phase: 'Run', agentType: '__AGENT_TYPE__', model: item.model }),
   (final, item) => agent(
-    'Write the text between the two marker lines, exactly as it is, to the file ' + item.cell + '/out/final.txt using the Write tool. Then reply DONE if this message is the only user message you have received in this conversation. If you received any other, reply FOREIGN and quote it.\\n<<<BEGIN\\n' + (final || '') + '\\nEND>>>',
-    { label: 'save:' + item.label, phase: 'Save', agentType: '__AGENT_TYPE__', model: 'haiku', effort: 'low' })
-    .then(reply => ({ cell: item.cell.split('/').pop(), foreign: /^\\W*FOREIGN\\b/.test(reply || '') })))
+    'Write the text between the two marker lines, exactly as it is, to the file ' + item.cell + '/out/final.txt using the Write tool. Then reply DONE.\\n<<<BEGIN\\n' + (final || '') + '\\nEND>>>',
+    { label: 'save:' + item.label, phase: 'Save', agentType: '__AGENT_TYPE__', model: 'haiku', effort: 'low' }))
 
-const after = await probe('guard:after')
-const guard = { clean_run: alone(after), foreign: saved.filter(Boolean).filter(s => s.foreign).map(s => s.cell) }
-await agent(
-  'Write the JSON between the two marker lines, exactly as it is, to the file ' + ROOT + '/guard.json using the Write tool. Then reply DONE.\\n<<<BEGIN\\n' + JSON.stringify(guard) + '\\nEND>>>',
-  { label: 'guard:write', phase: 'Guard', agentType: '__AGENT_TYPE__', model: 'haiku', effort: 'low' })
-
-return { cells: ITEMS.length, saved: saved.filter(Boolean).length, guard }
+return { cells: ITEMS.length, saved: saved.filter(Boolean).length }
 """
 
 
@@ -81,11 +67,8 @@ def prepare(args):
                     prompt = f"{preface}Work in the repository at {cell / 'repo'}.\n\n{task['prompt']}"
                     items.append({"cell": str(cell), "model": model, "label": f"{task['id']}:{name}:{model}:r{rep}", "prompt": prompt})
     index_file.write_text(json.dumps(index, indent=1))
-    (root / "guard.json").unlink(missing_ok=True)
     script = root / "arm.workflow.js"
-    script.write_text(
-        WORKFLOW.replace("__AGENT_TYPE__", args.agent_type).replace("__ROOT__", str(root)).replace("__ITEMS__", json.dumps(items, indent=1))
-    )
+    script.write_text(WORKFLOW.replace("__AGENT_TYPE__", args.agent_type).replace("__ITEMS__", json.dumps(items, indent=1)))
     print(json.dumps({"cells": len(items), "workflow_script": str(script)}))
 
 
@@ -94,20 +77,12 @@ def finish(args):
     RESULTS.mkdir(exist_ok=True)
     done = recorded(args.run)
     index = json.loads((root / "index.json").read_text())
-    guard_file = root / "guard.json"
-    if not guard_file.exists():
-        sys.exit(f"{guard_file} is missing: the run did not finish its check for messages that are not part of the benchmark")
-    guard = json.loads(guard_file.read_text())
-    if not guard["clean_run"]:
-        sys.exit("agents in this run received a message that is not part of the benchmark; prepare and run it again")
+    kit.require_single_messages(args.transcripts)
     written = 0
     with (RESULTS / f"{args.run}.jsonl").open("a") as log:
         for cell in sorted((root / "cells").glob("*")):
             final = cell / "out" / "final.txt"
             if cell.name not in index or not final.exists():
-                continue
-            if cell.name in guard["foreign"]:
-                print("not recorded, received a message that is not part of the benchmark: " + cell.name, flush=True)
                 continue
             meta = dict(index[cell.name])
             if (meta["task"], meta["variant"], meta["model"], meta["rep"]) in done:
@@ -140,6 +115,7 @@ def main():
     prep.add_argument("--ambient", default=None, help="name of the instruction file the chosen agent type already carries, recorded in the variant")
     done = sub.add_parser("finish")
     done.add_argument("--run", required=True)
+    done.add_argument("--transcripts", required=True, help="the Transcript dir that the Workflow result printed")
     args = parser.parse_args()
     (prepare if args.command == "prepare" else finish)(args)
     return 0
