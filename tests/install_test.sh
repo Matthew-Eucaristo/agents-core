@@ -51,13 +51,34 @@ installer "$H" uninstall
 check "uninstall removes the links it made" absent "$H/.claude/CLAUDE.md"
 check "uninstall removes the shared file when nothing else is in it" absent "$H/.agents"
 
+H=$(new_home opencode)
+mkdir -p "$H/.config/opencode"
+installer "$H" install
+check "install links opencode" is_link_to_shared "$H/.config/opencode/AGENTS.md" "$H"
+
+H=$(new_home more-tools)
+mkdir -p "$H/.pi/agent" "$H/.vibe" "$H/.copilot" "$H/.config/crush" "$H/.config/zed" "$H/qwen-home"
+QWEN_HOME="$H/qwen-home" installer "$H" install
+check "install links Pi" is_link_to_shared "$H/.pi/agent/AGENTS.md" "$H"
+check "install links Mistral Vibe" is_link_to_shared "$H/.vibe/AGENTS.md" "$H"
+check "install links Copilot CLI" is_link_to_shared "$H/.copilot/copilot-instructions.md" "$H"
+check "install links the shared config file Crush and Amp read" is_link_to_shared "$H/.config/AGENTS.md" "$H"
+check "install links Zed" is_link_to_shared "$H/.config/zed/AGENTS.md" "$H"
+check "install honours QWEN_HOME" is_link_to_shared "$H/qwen-home/AGENTS.md" "$H"
+
+H=$(new_home no-crush)
+mkdir -p "$H/.config/opencode"
+installer "$H" install
+check "the shared config file is linked only when Crush or Amp is installed" absent "$H/.config/AGENTS.md"
+
 H=$(new_home personal)
 mkdir -p "$H/.agents" "$H/.claude"
 printf '## Mine\n\n- No comments.\n' > "$H/.agents/AGENTS.md"
 cp "$H/.agents/AGENTS.md" "$WORK/mine.md"
 installer "$H" install
 check "an existing file is backed up" same_text "$H/.agents/AGENTS.md.before-agents-core" "$WORK/mine.md"
-check "the personal text is kept below the core" test "$(tail -n 3 "$H/.agents/AGENTS.md")" = "$(cat "$WORK/mine.md")"
+check "the personal text is kept above the core" test "$(head -n 3 "$H/.agents/AGENTS.md")" = "$(cat "$WORK/mine.md")"
+check "the core comes last" test "$(tail -n 1 "$H/.agents/AGENTS.md")" = "<!-- agents-core:end -->"
 installer "$H" update
 check "updating keeps the personal text exactly once" test "$(count_of '## Mine' "$H/.agents/AGENTS.md")" = 1
 CORE_HEADING=$(head -n 1 "$REPO/AGENTS.md")
@@ -66,6 +87,9 @@ printf 'New core text.\n' > "$WORK/core2.md"
 CORE_SOURCE="$WORK/core2.md" installer "$H" update
 check "updating replaces the core text" test "$(count_of 'New core text.' "$H/.agents/AGENTS.md")" = 1
 check "updating removes the old core text" test "$(count_of "$CORE_HEADING" "$H/.agents/AGENTS.md")" = 0
+{ printf '<!-- agents-core:begin -->\nOld core.\n<!-- agents-core:end -->\n\n'; cat "$WORK/mine.md"; } > "$H/.agents/AGENTS.md"
+installer "$H" update
+check "updating moves a core written above the personal text below it" test "$(head -n 3 "$H/.agents/AGENTS.md")" = "$(cat "$WORK/mine.md")"
 installer "$H" uninstall
 check "uninstall gives the personal file back unchanged" same_text "$H/.agents/AGENTS.md" "$WORK/mine.md"
 

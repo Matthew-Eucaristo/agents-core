@@ -11,15 +11,24 @@ END="<!-- agents-core:end -->"
 CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 
 link_targets() {
+  case "$(uname -s)" in
+    Darwin) zed_config="$HOME/.config/zed" ;;
+    *) zed_config="$CONFIG_HOME/zed" ;;
+  esac
   cat <<EOF
 $HOME/.claude/CLAUDE.md
 ${CODEX_HOME:-$HOME/.codex}/AGENTS.md
 $HOME/.gemini/AGENTS.md
-$HOME/.qwen/AGENTS.md
+${QWEN_HOME:-$HOME/.qwen}/AGENTS.md
 ${GROK_HOME:-$HOME/.grok}/AGENTS.md
-$CONFIG_HOME/kilo/AGENTS.md
-$CONFIG_HOME/zed/AGENTS.md
+${KILO_CONFIG_DIR:-$CONFIG_HOME/kilo}/AGENTS.md
+${OPENCODE_CONFIG_DIR:-$CONFIG_HOME/opencode}/AGENTS.md
+$zed_config/AGENTS.md
+${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}/AGENTS.md
+${VIBE_HOME:-$HOME/.vibe}/AGENTS.md
+${COPILOT_HOME:-$HOME/.copilot}/copilot-instructions.md
 EOF
+  if [ -d "$CONFIG_HOME/crush" ] || [ -d "$HOME/.config/amp" ]; then printf '%s\n' "$CONFIG_HOME/AGENTS.md"; fi
 }
 
 COMMAND="install"
@@ -74,13 +83,13 @@ write_shared() {
   rest_file=$2
   target=$(mktemp)
   {
+    if [ -s "$rest_file" ]; then
+      cat "$rest_file"
+      say ""
+    fi
     say "$BEGIN"
     cat "$core_file"
     say "$END"
-    if [ -s "$rest_file" ]; then
-      say ""
-      cat "$rest_file"
-    fi
   } > "$target"
   if [ "$DRY_RUN" -eq 1 ]; then
     say "would write: $SHARED_FILE ($(wc -l < "$target" | tr -d ' ') lines)"
@@ -104,12 +113,12 @@ install_core() {
   if [ -f "$SHARED_FILE" ]; then
     if grep -qxF "$BEGIN" "$SHARED_FILE"; then
       without_block "$SHARED_FILE" > "$rest_file"
-      say "updating the core principles in $SHARED_FILE; your own text below them is kept"
+      say "updating the core principles in $SHARED_FILE; your own text above them is kept"
     else
       backup="$SHARED_FILE.before-agents-core"
       if [ ! -e "$backup" ]; then run cp "$SHARED_FILE" "$backup"; fi
       cat "$SHARED_FILE" > "$rest_file"
-      say "adding the core principles above your existing $SHARED_FILE (copy saved as $backup)"
+      say "adding the core principles below your existing $SHARED_FILE (copy saved as $backup)"
     fi
   else
     say "creating $SHARED_FILE"
@@ -136,10 +145,11 @@ link_tools() {
 
 manual_steps() {
   if [ -d "$HOME/.gemini" ]; then say "Gemini CLI: add \"context\": {\"fileName\": [\"GEMINI.md\", \"AGENTS.md\"]} to ~/.gemini/settings.json"; fi
-  if [ -d "$CONFIG_HOME/amp" ]; then say "Amp: put the single line @~/.agents/AGENTS.md in $CONFIG_HOME/amp/AGENTS.md"; fi
-  if [ -d "$HOME/.kiro" ]; then say "Kiro: copy $SHARED_FILE to ~/.kiro/steering/AGENTS.md (it ignores links)"; fi
+  kiro_home="${KIRO_HOME:-$HOME/.kiro}"
+  if [ -d "$kiro_home" ]; then say "Kiro: copy $SHARED_FILE to $kiro_home/steering/AGENTS.md after each update (it ignores links)"; fi
+  if [ -d "$HOME/.augment" ]; then say "Augment: copy $SHARED_FILE to ~/.augment/rules/agents-core.md after each update (it ignores links)"; fi
   if [ -d "$HOME/.cursor" ]; then say "Cursor: paste the rules into Settings > Rules > User Rules"; fi
-  if [ -f "$HOME/.aider.conf.yml" ]; then say "Aider: add 'read: ~/.agents/AGENTS.md' to ~/.aider.conf.yml"; fi
+  if [ -f "$HOME/.aider.conf.yml" ]; then say "Aider: add ~/.agents/AGENTS.md to the read: list in ~/.aider.conf.yml"; fi
 }
 
 uninstall_all() {

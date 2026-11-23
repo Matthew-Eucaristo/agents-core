@@ -20,7 +20,7 @@ The file agents read is [AGENTS.md](AGENTS.md): those seven sentences and a shor
 curl -fsSL https://raw.githubusercontent.com/Matthew-Eucaristo/agents-core/main/install.sh | sh
 ```
 
-This writes the principles to `~/.agents/AGENTS.md`, keeps your own text below them, and links the tools it finds. Run it again to update, or after you install another tool. To remove everything it added:
+This writes the principles to `~/.agents/AGENTS.md`, keeps your own text above them, and links the tools it finds. Run it again to update, or after you install another tool. To remove everything it added:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Matthew-Eucaristo/agents-core/main/install.sh | sh -s -- uninstall
@@ -30,10 +30,10 @@ One file serves every tool. When you move from one agent tool to another, run th
 
 | Tool | What the installer does |
 |---|---|
-| Cline, Goose, Warp, Kimi Code, DeepSeek Harness, Factory Droid, opencode 2.3 | Nothing: they read `~/.agents/AGENTS.md` themselves |
-| Claude Code, Codex, Qwen Code, Grok Build, Kilo Code, Zed | Links the tool's own global file to it |
+| Cline, Goose, Warp, Kimi Code, DeepSeek Harness, Factory Droid | Nothing: they read `~/.agents/AGENTS.md` themselves |
+| Claude Code, Codex, Qwen Code, Grok Build, Kilo Code, opencode, Zed, Pi, Mistral Vibe, Copilot CLI, Crush, Amp | Links the tool's own global file to it |
 | Gemini CLI | Links it and prints the one setting to add |
-| Cursor, Amp, Kiro, Aider | Prints the one manual step |
+| Cursor, Kiro, Augment, Aider | Prints the one manual step |
 
 It never overwrites a file you already have, and removes only the links it made. Paths were checked against each tool's documentation or source in November 2026.
 
@@ -49,10 +49,10 @@ A principle stays only if a more capable agent does not need it less, a reasonab
 
 ## Your own layer
 
-Put your preferences below the core in `~/.agents/AGENTS.md`. [examples/personal.md](examples/personal.md) is one person's layer to start from:
+Put your preferences in `~/.agents/AGENTS.md`; the installer keeps them above the core. [examples/personal.md](examples/personal.md) is one person's layer to start from:
 
 ```bash
-{ echo; curl -fsSL https://raw.githubusercontent.com/Matthew-Eucaristo/agents-core/main/examples/personal.md; } >> ~/.agents/AGENTS.md
+{ echo; curl -fsSL https://raw.githubusercontent.com/Matthew-Eucaristo/agents-core/main/examples/personal.md; } >> ~/.agents/AGENTS.md && curl -fsSL https://raw.githubusercontent.com/Matthew-Eucaristo/agents-core/main/install.sh | sh
 ```
 
 "Nuance tends to lead to slop" ([Lauren Tan](https://www.youtube.com/watch?v=O_zcc6Xl12g)). Write each preference as one default with a closed list of exceptions. A preference that needs judgment to apply belongs in a lint rule, a hook, or a test, not in a sentence.
@@ -73,6 +73,7 @@ Bare Claude agents (Haiku, Sonnet, Opus) ran 19 trap tasks. On twelve, every tex
 - A scope line worked against it. Texts with "Do all of what was asked and nothing more" got the check in 37 of 48 runs, texts without it in 78 of 80. Most agents that skipped the check said it had not been asked for.
 - An eighth line, "See a new check fail before you trust it", was tested and left out. On the task built for it, all 36 runs wrote a test that fails without the fix, with or without the line. With the line, the report of a one-word fix was too long in 3 of 9 runs.
 - An ambition line was tested and left out. On a task where adding a remove command quietly breaks id assignment, all 36 runs fixed that, rejected unknown ids, and added no features, with or without a line. "Be unreasonably ambitious" made Opus grow the change in all 6 of its runs on the two small-change tasks (0 of 12 for Haiku and Sonnet). An eighth principle, "Finish the job the request is for, including what your change breaks: deeper, not bigger", changed nothing.
+- The core goes after your preferences. With the preferences first, Haiku at low effort added the check in 39 of 48 runs, against 37 of 54 with the core first, and lost nothing on the other tasks. The difference is not yet significant (p = 0.18).
 - Explanation made results worse: agents added the check less often (5 of 9 runs against 8 of 9) and more often refused to clean up files that could be regenerated.
 - Preferences do what they say. With the example layer, no run added a comment (9 of 9, against 0 of 9 without it) and 7 of 9 reports showed the output of the real run (against 0 of 9). The price: 3 of 9 reports of a one-word fix ran past six sentences.
 
