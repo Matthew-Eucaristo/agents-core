@@ -15,11 +15,13 @@ WORKFLOW = """export const meta = {
   phases: [{ title: 'Run' }, { title: 'Save' }],
 }
 
-const ITEMS = __ITEMS__
+const PREFACES = __PREFACES__
+const TASKS = __TASKS__
+const ITEMS = __ITEMS__.map(item => ({ ...item, prompt: PREFACES[item.variant] + 'Work in the repository at ' + item.cell + '/repo.\\n\\n' + TASKS[item.task] }))
 
 const saved = await pipeline(
   ITEMS,
-  item => agent(item.prompt, { label: item.label, phase: 'Run', agentType: '__AGENT_TYPE__', model: item.model }),
+  item => agent(item.prompt, { label: item.label, phase: 'Run', agentType: '__AGENT_TYPE__', model: item.model, ...(item.effort ? { effort: item.effort } : {}) }),
   (final, item) => agent(
     'Write the text between the two marker lines, exactly as it is, to the file ' + item.cell + '/out/final.txt using the Write tool. Then reply DONE.\\n<<<BEGIN\\n' + (final || '') + '\\nEND>>>',
     { label: 'save:' + item.label, phase: 'Save', agentType: '__AGENT_TYPE__', model: 'haiku', effort: 'low' }))
@@ -50,6 +52,8 @@ def prepare(args):
     index_file = root / "index.json"
     index = json.loads(index_file.read_text()) if index_file.exists() else {}
     items = []
+    prefaces = {}
+    prompts = {}
     for task_path in args.tasks:
         task = kit.load_task(task_path)
         for variant in args.variants:
@@ -57,19 +61,20 @@ def prepare(args):
             if args.ambient:
                 name = args.ambient if name == "none" else f"{args.ambient}+{name}"
             standing = "" if variant == "none" else pathlib.Path(variant).read_text().strip()
-            for model in args.models:
+            for model, effort in [(m, e) for m in args.models for e in args.efforts]:
+                label = model if effort is None else f"{model}@{effort}"
                 for rep in range(args.reps):
-                    if (task["id"], name, f"claude-code/{model}", rep) in done:
+                    if (task["id"], name, f"claude-code/{label}", rep) in done:
                         continue
-                    cell = kit.build_cell(task, root / "cells" / cell_name(task["id"], name, model, rep))
-                    index[cell.name] = {"task": task["id"], "task_dir": str(task["dir"]), "variant": name, "model": f"claude-code/{model}", "rep": rep}
-                    preface = f"Your standing instructions from the user's global AGENTS.md file:\n\n{standing}\n\n---\n\n" if standing else ""
-                    prompt = f"{preface}Work in the repository at {cell / 'repo'}.\n\n{task['prompt']}"
-                    items.append({"cell": str(cell), "model": model, "label": f"{task['id']}:{name}:{model}:r{rep}", "prompt": prompt})
+                    cell = kit.build_cell(task, root / "cells" / cell_name(task["id"], name, label, rep))
+                    index[cell.name] = {"task": task["id"], "task_dir": str(task["dir"]), "variant": name, "model": f"claude-code/{label}", "rep": rep}
+                    prefaces[name] = f"Your standing instructions from the user's global AGENTS.md file:\n\n{standing}\n\n---\n\n" if standing else ""
+                    prompts[task["id"]] = task["prompt"]
+                    items.append({"cell": str(cell), "model": model, "effort": effort, "label": f"{task['id']}:{name}:{label}:r{rep}", "variant": name, "task": task["id"]})
     index_file.write_text(json.dumps(index, indent=1))
     script = root / "arm.workflow.js"
-    script.write_text(WORKFLOW.replace("__AGENT_TYPE__", args.agent_type).replace("__ITEMS__", json.dumps(items, indent=1)))
-    print(json.dumps({"cells": len(items), "workflow_script": str(script)}))
+    script.write_text(WORKFLOW.replace("__AGENT_TYPE__", args.agent_type).replace("__PREFACES__", json.dumps(prefaces)).replace("__TASKS__", json.dumps(prompts)).replace("__ITEMS__", json.dumps(items)))
+    print(json.dumps({"cells": len(items), "workflow_script": str(script), "launch": "only in a turn that a background task's completion started; a workflow started in a turn a user message began relays that message to every agent"}))
 
 
 def finish(args):
@@ -111,6 +116,7 @@ def main():
     prep.add_argument("--variants", nargs="+", required=True)
     prep.add_argument("--models", nargs="+", default=["haiku", "sonnet", "opus"])
     prep.add_argument("--reps", type=int, default=1)
+    prep.add_argument("--efforts", nargs="+", default=[None], help="effort levels to run each model at; default is the agent's own")
     prep.add_argument("--agent-type", default="acore-eval", help="agent type that runs each cell; the default loads no instruction files")
     prep.add_argument("--ambient", default=None, help="name of the instruction file the chosen agent type already carries, recorded in the variant")
     done = sub.add_parser("finish")

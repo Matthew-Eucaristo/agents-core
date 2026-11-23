@@ -85,7 +85,7 @@ A principle changes only with an older root from two different fields behind it 
 python3 eval/claude_arm.py prepare --run try1 --tasks eval/tasks/correction-to-check --variants none AGENTS.md --reps 3
 ```
 
-Ask Claude Code to run the workflow script that command prints, then pass the Transcript dir from its result. `finish` records nothing if any agent received a message other than its task:
+Ask Claude Code to start a short background `sleep` and to run the workflow script that command prints only when the sleep's completion wakes it, then pass the Transcript dir from its result. A workflow started in the turn your message began relays that message to every agent. `finish` records nothing if any agent received a message other than its task:
 
 ```bash
 python3 eval/claude_arm.py finish --run try1 --transcripts <Transcript dir> && python3 eval/summary.py try1 --no-rubric

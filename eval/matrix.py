@@ -96,13 +96,13 @@ def main():
     run_root = kit.EVAL_ROOT / "runs" / args.run
     run_root.mkdir(parents=True, exist_ok=True)
     jobs = []
-    for task in args.tasks:
-        task_id = kit.load_task(task)["id"]
-        for variant in args.variants:
-            name = "none" if variant == "none" else pathlib.Path(variant).stem
-            for model in args.models:
-                for rep in range(args.reps):
-                    if (task_id, name, model, rep) not in done_keys:
+    task_ids = {task: kit.load_task(task)["id"] for task in args.tasks}
+    for rep in range(args.reps):
+        for task in args.tasks:
+            for variant in args.variants:
+                name = "none" if variant == "none" else pathlib.Path(variant).stem
+                for model in args.models:
+                    if (task_ids[task], name, model, rep) not in done_keys:
                         jobs.append({"task": task, "variant": variant, "model": model, "rep": rep})
     jobs = interleave(jobs)
     print(f"{len(jobs)} cells to run, {len(done_keys)} already recorded", flush=True)
