@@ -6,6 +6,7 @@ TEST_SH=${TEST_SH:-sh}
 WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT
 FAILED=0
+unset CODEX_HOME QWEN_HOME GROK_HOME KILO_CONFIG_DIR OPENCODE_CONFIG_DIR PI_CODING_AGENT_DIR VIBE_HOME COPILOT_HOME KIRO_HOME
 
 check() {
   description=$1
@@ -21,7 +22,7 @@ check() {
 installer() {
   home=$1
   shift
-  HOME="$home" AGENTS_CORE_SOURCE="${CORE_SOURCE:-$REPO/AGENTS.md}" "$TEST_SH" "$REPO/install.sh" "$@" > "$home.log" 2>&1
+  HOME="$home" XDG_CONFIG_HOME="$home/.config" AGENTS_CORE_SOURCE="${CORE_SOURCE:-$REPO/AGENTS.md}" "$TEST_SH" "$REPO/install.sh" "$@" > "$home.log" 2>&1
 }
 
 new_home() {
@@ -115,10 +116,10 @@ check "a dry run links nothing" absent "$H/.claude/CLAUDE.md"
 
 H=$(new_home piped)
 mkdir -p "$H/.codex"
-(cd "$WORK" && HOME="$H" AGENTS_CORE_URL="file://$REPO/AGENTS.md" "$TEST_SH" -s -- install < "$REPO/install.sh" > "$H.log" 2>&1)
+(cd "$WORK" && HOME="$H" XDG_CONFIG_HOME="$H/.config" AGENTS_CORE_URL="file://$REPO/AGENTS.md" "$TEST_SH" -s -- install < "$REPO/install.sh" > "$H.log" 2>&1)
 check "piped into sh, it fetches the core from the URL" test "$(count_of 'agents-core:begin' "$H/.agents/AGENTS.md")" = 1
 check "piped into sh, it links the tools it finds" is_link_to_shared "$H/.codex/AGENTS.md" "$H"
-(cd "$WORK" && HOME="$H" "$TEST_SH" -s -- uninstall < "$REPO/install.sh" > "$H.log" 2>&1)
+(cd "$WORK" && HOME="$H" XDG_CONFIG_HOME="$H/.config" "$TEST_SH" -s -- uninstall < "$REPO/install.sh" > "$H.log" 2>&1)
 check "piped uninstall leaves nothing behind" absent "$H/.agents"
 
 exit "$FAILED"
