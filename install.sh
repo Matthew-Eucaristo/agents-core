@@ -83,13 +83,13 @@ write_shared() {
   rest_file=$2
   target=$(mktemp)
   {
-    if [ -s "$rest_file" ]; then
-      cat "$rest_file"
-      say ""
-    fi
     say "$BEGIN"
     cat "$core_file"
     say "$END"
+    if [ -s "$rest_file" ]; then
+      say ""
+      cat "$rest_file"
+    fi
   } > "$target"
   if [ "$DRY_RUN" -eq 1 ]; then
     say "would write: $SHARED_FILE ($(wc -l < "$target" | tr -d ' ') lines)"
@@ -113,12 +113,12 @@ install_core() {
   if [ -f "$SHARED_FILE" ]; then
     if grep -qxF "$BEGIN" "$SHARED_FILE"; then
       without_block "$SHARED_FILE" > "$rest_file"
-      say "updating the core principles in $SHARED_FILE; your own text above them is kept"
+      say "updating the core principles in $SHARED_FILE; your own text below them is kept"
     else
       backup="$SHARED_FILE.before-agents-core"
       if [ ! -e "$backup" ]; then run cp "$SHARED_FILE" "$backup"; fi
       cat "$SHARED_FILE" > "$rest_file"
-      say "adding the core principles below your existing $SHARED_FILE (copy saved as $backup)"
+      say "adding the core principles above your existing $SHARED_FILE (copy saved as $backup)"
     fi
   else
     say "creating $SHARED_FILE"

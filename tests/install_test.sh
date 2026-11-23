@@ -77,8 +77,8 @@ printf '## Mine\n\n- No comments.\n' > "$H/.agents/AGENTS.md"
 cp "$H/.agents/AGENTS.md" "$WORK/mine.md"
 installer "$H" install
 check "an existing file is backed up" same_text "$H/.agents/AGENTS.md.before-agents-core" "$WORK/mine.md"
-check "the personal text is kept above the core" test "$(head -n 3 "$H/.agents/AGENTS.md")" = "$(cat "$WORK/mine.md")"
-check "the core comes last" test "$(tail -n 1 "$H/.agents/AGENTS.md")" = "<!-- agents-core:end -->"
+check "the personal text is kept below the core" test "$(tail -n 3 "$H/.agents/AGENTS.md")" = "$(cat "$WORK/mine.md")"
+check "the core comes first" test "$(head -n 1 "$H/.agents/AGENTS.md")" = "<!-- agents-core:begin -->"
 installer "$H" update
 check "updating keeps the personal text exactly once" test "$(count_of '## Mine' "$H/.agents/AGENTS.md")" = 1
 CORE_HEADING=$(head -n 1 "$REPO/AGENTS.md")
@@ -87,9 +87,9 @@ printf 'New core text.\n' > "$WORK/core2.md"
 CORE_SOURCE="$WORK/core2.md" installer "$H" update
 check "updating replaces the core text" test "$(count_of 'New core text.' "$H/.agents/AGENTS.md")" = 1
 check "updating removes the old core text" test "$(count_of "$CORE_HEADING" "$H/.agents/AGENTS.md")" = 0
-{ printf '<!-- agents-core:begin -->\nOld core.\n<!-- agents-core:end -->\n\n'; cat "$WORK/mine.md"; } > "$H/.agents/AGENTS.md"
+{ cat "$WORK/mine.md"; printf '\n<!-- agents-core:begin -->\nOld core.\n<!-- agents-core:end -->\n'; } > "$H/.agents/AGENTS.md"
 installer "$H" update
-check "updating moves a core written above the personal text below it" test "$(head -n 3 "$H/.agents/AGENTS.md")" = "$(cat "$WORK/mine.md")"
+check "updating moves a core written below the personal text above it" test "$(tail -n 3 "$H/.agents/AGENTS.md")" = "$(cat "$WORK/mine.md")"
 installer "$H" uninstall
 check "uninstall gives the personal file back unchanged" same_text "$H/.agents/AGENTS.md" "$WORK/mine.md"
 
