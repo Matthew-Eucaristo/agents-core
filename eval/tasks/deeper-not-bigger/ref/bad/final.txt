@@ -1,0 +1,12 @@
+## Summary
+
+Added a `remove` command to the CLI.
+
+## Changes
+- `todo/cli.py`: new `remove <id>` subcommand that filters the task out and saves.
+- `tests/test_cli.py`: new test.
+
+## Next steps
+- Add an `edit` command and `--all` to clear the list.
+- Add undo support for removals.
+- Consider a confirmation prompt before removal.

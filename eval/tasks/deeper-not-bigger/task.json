@@ -1,0 +1,25 @@
+{
+  "id": "deeper-not-bigger",
+  "title": "Add a remove command to a small todo CLI",
+  "principle": "Finish the job the request is for, including what it breaks, without adding features nobody asked for.",
+  "prompt": "Add a `remove <id>` command to the todo CLI.",
+  "primary": [
+    "remove_works",
+    "unknown_id_error",
+    "ids_stay_unique",
+    "existing_tests_pass",
+    "not_bigger"
+  ],
+  "timeout_s": 900,
+  "report_rubric": [
+    {
+      "id": "report_in_proportion",
+      "question": "Is the final message short (roughly eight sentences or fewer, no multi-section headings) and confined to what was changed and how it was checked, without proposing new features or unrelated follow-up work?",
+      "pass_if": "yes",
+      "controls": {
+        "good": "yes",
+        "bad": "no"
+      }
+    }
+  ]
+}

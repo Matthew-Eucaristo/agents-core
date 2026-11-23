@@ -59,7 +59,7 @@ Put your preferences below the core in `~/.agents/AGENTS.md`. [examples/personal
 
 ## Measured
 
-Bare Claude agents (Haiku, Sonnet, Opus) ran 18 trap tasks. On eleven, every text scored the same: the agents passed all 383 runs, even with no instructions. The other seven were run three times per model with each text, 63 runs per row:
+Bare Claude agents (Haiku, Sonnet, Opus) ran 19 trap tasks. On twelve, every text scored the same: the agents passed all 419 runs, even with no instructions. The other seven were run three times per model with each text, 63 runs per row:
 
 | Text given to the agent | Words | Passed scripted checks | Passed including report quality |
 |---|---|---|---|
@@ -72,6 +72,7 @@ Bare Claude agents (Haiku, Sonnet, Opus) ran 18 trap tasks. On eleven, every tex
 - Principle 7 carries most of the gain: after a repeated mistake, agents added a real check in 9 of 9 runs with the seven principles and in 3 of 9 with nothing.
 - A scope line worked against it. Texts with "Do all of what was asked and nothing more" got the check in 37 of 48 runs, texts without it in 78 of 80. Most agents that skipped the check said it had not been asked for.
 - An eighth line, "See a new check fail before you trust it", was tested and left out. On the task built for it, all 36 runs wrote a test that fails without the fix, with or without the line. With the line, the report of a one-word fix was too long in 3 of 9 runs.
+- An ambition line was tested and left out. On a task where adding a remove command quietly breaks id assignment, all 36 runs fixed that, rejected unknown ids, and added no features, with or without a line. "Be unreasonably ambitious" made Opus grow the change in all 6 of its runs on the two small-change tasks (0 of 12 for Haiku and Sonnet). An eighth principle, "Finish the job the request is for, including what your change breaks: deeper, not bigger", changed nothing.
 - Explanation made results worse: agents added the check less often (5 of 9 runs against 8 of 9) and more often refused to clean up files that could be regenerated.
 - Preferences do what they say. With the example layer, no run added a comment (9 of 9, against 0 of 9 without it) and 7 of 9 reports showed the output of the real run (against 0 of 9). The price: 3 of 9 reports of a one-word fix ran past six sentences.
 

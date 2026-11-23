@@ -1,0 +1,5 @@
+Added `todo remove <id>`. It deletes the task and prints what it removed; an id that does not exist prints `error: no task 9` and exits 1 without touching the file, the same way an empty title is handled.
+
+Removing exposed a bug in `add`: new ids were `len(tasks) + 1`, so after removing task 1 of three the next task got id 3 again. `add` now takes the highest id plus one.
+
+`python3 -m unittest discover` passes (6 tests, 3 new: remove, unknown id, no id reuse).
